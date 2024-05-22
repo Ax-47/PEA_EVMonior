@@ -1,0 +1,133 @@
+@page "/electricitydata"
+@using PEA_EVMonior.Models
+@using Microsoft.EntityFrameworkCore
+@inject IDbContextFactory<PeadatabaseContext> PeaContextFactory
+@rendermode InteractiveServer
+
+<PageTitle>Electricity Data</PageTitle>
+
+@if (electricityData == null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>CRSG</th>
+            <th>RSG</th>
+            <th>BP</th>
+            <th>Contract Account</th>
+            <th>Installation</th>
+            <th>Period</th>
+            <th>KVA</th>
+            <th>TSIC</th>
+            <th>Rate Category</th>
+            <th>Rate Bill</th>
+            <th>MRU</th>
+            <th>Material No</th>
+            <th>KW_PK</th>
+            <th>KW_PP_OP</th>
+            <th>KW_OP_H</th>
+            <th>KVAR_MAX</th>
+            <th>KWH_PK</th>
+            <th>KWH_PP_OP</th>
+            <th>KWH_OP_H</th>
+            <th>KWH_TOT</th>
+            <th>KWH_PEA</th>
+            <th>AMT_KW_PK</th>
+            <th>AMT_KW_PP</th>
+            <th>AMT_PF</th>
+            <th>AMT_KWH_PK</th>
+            <th>AMT_KWH_OP</th>
+            <th>AMT_KWH_TOT</th>
+            <th>AMT_SERVICE</th>
+            <th>AMT_FT</th>
+            <th>AMT_BOI</th>
+            <th>AMT_MIN</th>
+            <th>AMT_BILL</th>
+            <th>AMT_VAT</th>
+            <th>AMT_INVOICE</th>
+            <th>TRNLOSS</th>
+            <th>CT</th>
+            <th>VT</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var data in electricityData)
+        {
+            <tr>
+                
+                    <td>@data.Id</td>
+                    <td>@data.Crsg</td>
+                    <td>@data.Rsg</td>
+                    <td>@data.Bp</td>
+                    <td>@data.ContractAccMI</td>
+                    <td>@data.Installation</td>
+                    <td>@data.Period?.ToString("yyyy-MM-dd")</td>
+                    <td>@data.Kva</td>
+                    <td>@data.Tsic</td>
+                    <td>@data.Ratecat</td>
+                    <td>@data.Ratebill</td>
+                    <td>@data.Mru</td>
+                    <td>@data.MaterialNo</td>
+                    <td>@data.KwPk</td>
+                    <td>@data.KwPpOp</td>
+                    <td>@data.KwOpH</td>
+                    <td>@data.KvarMax</td>
+                    <td>@data.KwhPk</td>
+                    <td>@data.KwhPpOp</td>
+                    <td>@data.KwhOpH</td>
+                    <td>@data.KwhTot</td>
+                    <td>@data.KwhPea</td>
+                    <td>@data.AmtKwPk</td>
+                    <td>@data.AmtKwPp</td>
+                    <td>@data.AmtPf</td>
+                    <td>@data.AmtKwhPk</td>
+                    <td>@data.AmtKwhOp</td>
+                    <td>@data.AmtKwhTot</td>
+                    <td>@data.AmtService</td>
+                    <td>@data.AmtFt</td>
+                    <td>@data.AmtBoi</td>
+                    <td>@data.AmtMin</td>
+                    <td>@data.AmtBill</td>
+                    <td>@data.AmtVat</td>
+                    <td>@data.AmtInvoice</td>
+                    <td>@data.Trnloss</td>
+                    <td>@data.Ct</td>
+                    <td>@data.Vt</td>
+                
+                
+            </tr>
+        }
+        </tbody>
+    </table>
+
+<Pagination TotalItems="totalRequests" ItemsPerPage="pageSize" OnPageChanged="LoadPage" />
+}
+
+
+@code {
+    private PeadatabaseContext _context;
+    private List<ElectricityDatum> electricityData;
+    private int totalRequests;
+    private int pageSize = 100;
+    private int currentPage = 1;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        _context = PeaContextFactory.CreateDbContext();
+        electricityData = await _context.ElectricityData.ToListAsync();
+    }
+    private async Task LoadPage(int page)
+    {
+    currentPage = page;
+    electricityData = await _context.ElectricityData
+        .Skip((currentPage - 1) * pageSize)
+        .Take(pageSize)
+        .ToListAsync();
+    }
+}

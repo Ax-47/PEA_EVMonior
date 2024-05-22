@@ -1,0 +1,71 @@
+@page "/requests"
+@using PEA_EVMonior.Models
+@using Microsoft.EntityFrameworkCore
+@inject IDbContextFactory<PeadatabaseContext> PeaContextFactory
+@rendermode InteractiveServer
+<PageTitle>Requests</PageTitle>
+
+@if (requests == null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Address</th>
+            <th>Amount</th>
+            <th>Description</th>
+            <th>CA</th>
+            <th>PACode</th>
+            <th>RequestID</th>
+            <th>TypeRequest</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var request in requests)
+        {
+            <tr>
+                <td>@request.Id</td>
+                <td>@request.Name</td>
+                <td>@request.Address</td>
+                <td>@request.Amount</td>
+                <td>@request.Description</td>
+                <td>@request.Ca</td>
+                <td>@request.Pacode</td>
+                <td>@request.RequestId</td>
+                <td>@request.TypeRequest</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+
+    <Pagination TotalItems="totalRequests" ItemsPerPage="pageSize" OnPageChanged="LoadPage" />
+}
+
+@code {
+    private PeadatabaseContext _context;
+    private List<Request> requests;
+    private int totalRequests;
+    private int pageSize = 100;
+    private int currentPage = 1;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _context = PeaContextFactory.CreateDbContext();
+        totalRequests = await _context.Requests.CountAsync();
+        await LoadPage(1);
+    }
+
+    private async Task LoadPage(int page)
+    {
+        currentPage = page;
+        requests = await _context.Requests
+            .Skip((currentPage - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
+    }
+}

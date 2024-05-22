@@ -1,0 +1,14 @@
+﻿services:
+  pea_evmonior:
+    image: pea_evmonior
+    build:
+      context: .
+      dockerfile: PEA_EVMonior/Dockerfile
+  database:
+    image: mariadb:11.3.2
+    restart: always
+    environment:
+      MARIADB_ROOT_PASSWORD: password
+      MYSQL_DATABASE: PEADatabase
+    ports:
+      - 3306:3306

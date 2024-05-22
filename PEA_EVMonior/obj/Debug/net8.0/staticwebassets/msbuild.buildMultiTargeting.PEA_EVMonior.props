@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="../build/PEA_EVMonior.props" />
+</Project>
