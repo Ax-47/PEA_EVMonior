@@ -4,6 +4,9 @@
     build:
       context: .
       dockerfile: PEA_EVMonior/Dockerfile
+    ports:
+      - 8080:8080
+      - 8081:8081
   database:
     image: mariadb:11.3.2
     restart: always
@@ -12,3 +15,5 @@
       MYSQL_DATABASE: PEADatabase
     ports:
       - 3306:3306
+    volumes:
+      - "./PEAData.sql:/docker-entrypoint-initdb.d/1.sql"
